@@ -7,7 +7,13 @@ from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoi
 import keras.backend as K
 import multiprocessing
 
-my_loc = os.path.dirname(os.path.abspath(__file__))
+# cx_freeze specific
+if getattr(sys, 'frozen', False):
+    my_loc = os.path.dirname(os.path.abspath(sys.executable))
+else:
+my_loc = os.path.dirname(os.path.realpath(__file__))
+
+#my_loc = os.path.dirname(os.path.abspath(__file__))
 
 parser = argparse.ArgumentParser(description='DeepCoil')
 parser.add_argument('-i',
@@ -32,7 +38,7 @@ args = parser.parse_args()
 for i in range(1, 6):
     if not os.path.isfile('%s/weights/final_seq_%s.h5' % (my_loc, i)) and not os.path.isfile(
                     '%s/weights/final_seq_pssm_%s.h5' % (my_loc, i)):
-        print("Weight files for the PiPred model are not available.")
+        print("Weight files for the DeepCoil model are not available.")
         print("Download weights from http://lbs.cent.uw.edu.pl/")
         exit()
 
