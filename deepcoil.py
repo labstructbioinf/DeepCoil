@@ -11,7 +11,7 @@ import multiprocessing
 if getattr(sys, 'frozen', False):
     my_loc = os.path.dirname(os.path.abspath(sys.executable))
 else:
-my_loc = os.path.dirname(os.path.realpath(__file__))
+    my_loc = os.path.dirname(os.path.realpath(__file__))
 
 #my_loc = os.path.dirname(os.path.abspath(__file__))
 
