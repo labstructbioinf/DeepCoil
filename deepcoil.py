@@ -1,6 +1,6 @@
 import argparse
 from Bio import SeqIO
-import os
+import os,sys
 import random
 import numpy as np
 from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoil_Model, decode
