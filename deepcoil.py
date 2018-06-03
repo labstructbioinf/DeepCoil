@@ -7,6 +7,7 @@ from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoi
 import keras.backend as K
 import multiprocessing
 
+
 # cx_freeze specific
 if getattr(sys, 'frozen', False):
     my_loc = os.path.dirname(os.path.abspath(sys.executable))
