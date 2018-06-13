@@ -6,6 +6,7 @@ import numpy as np
 from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoil_Model, decode
 import keras.backend as K
 import multiprocessing
+import h5py
 
 
 # cx_freeze specific
@@ -32,6 +33,14 @@ parser.add_argument('-pssm_path',
                     metavar='DIR',
                     default='.',
                     help='Directory with PSSM files.')
+parser.add_argument('-out_type',
+                    help='Output type. Either \'ascii\' or \'h5\'',
+                    default='ascii',
+                    metavar='OUT_TYPE')
+parser.add_argument('-out_filename',
+                    help='Output filename. Works only with \'h5\' output mode',
+                    default='out.h5',
+                    metavar='OUT_FILENAME')
 args = parser.parse_args()
 
 # Verify whether weights files are present
@@ -133,10 +142,17 @@ for i in range(1, 6):
         else:
             ensemble_results[entry] = np.vstack((ensemble_results[entry], decoded_prediction))
 K.clear_session()
-for entry, seq in zip(entries, sequences):
-    f = open('%s/%s.out' % (args.out_path, entry), 'w')
-    final_results = np.average(ensemble_results[entry], axis=0)
-    for aa, prob in zip(seq, final_results):
-        f.write("%s %s\n" % (aa, "% .3f" % prob))
+print("Writing output...")
+if args.out_type == 'ascii':
+    for entry, seq in zip(entries, sequences):
+        f = open('%s/%s.out' % (args.out_path, entry), 'w')
+        final_results = np.average(ensemble_results[entry], axis=0)
+        for aa, prob in zip(seq, final_results):
+            f.write("%s %s\n" % (aa, "% .3f" % prob))
+    f.close()
+elif args.out_type == 'h5':
+    f = h5py.File(args.out_filename, 'w')
+    for entry, seq in zip(entries, sequences):
+        f.create_dataset(data=np.average(ensemble_results[entry], axis=0), name=entry)
     f.close()
 print("Done!")
