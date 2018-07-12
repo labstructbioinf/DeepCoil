@@ -6,11 +6,9 @@ First clone this repository:
 ```bash
 $ git clone https://github.com/labstructbioinf/DeepCoil.git
 ```
-Due to the size, weight files for the model have to be downloaded separately from
-our website http://lbs.cent.uw.edu.pl 
 ​
-Required packages to run PiPred are listed in the **`requirements.txt`** file.
-We suggest running PiPred in the virtual environment:
+Required packages to run DeepCoil are listed in the **`requirements.txt`** file.
+We suggest running DeepCoil in the virtual environment:
 If you don't have virtualenv installed do so:
 ```bash
 $ pip3 install virtualenv
