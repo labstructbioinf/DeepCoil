@@ -49,7 +49,6 @@ for i in range(1, 6):
     if not os.path.isfile('%s/weights/final_seq_%s.h5' % (my_loc, i)) and not os.path.isfile(
                     '%s/weights/final_seq_pssm_%s.h5' % (my_loc, i)):
         print("Weight files for the DeepCoil model are not available.")
-        print("Download weights from http://lbs.cent.uw.edu.pl/")
         exit()
 
 # INPUT VERIFICATION #
@@ -119,30 +118,42 @@ if args.pssm:
                 exit()
         pssm_files.append(pssm_fn)
 
-print("Encoding sequences...")
 # Encode sequence into vector format
 enc_sequences = []
+c = 0
+len_all = len(entries)
 if args.pssm:
     for seq, pssm_fn in zip(sequences, pssm_files):
+        c += 1
+        sys.stdout.write("\rEncoding sequences: {0} / {1}...".format(c, len_all))
+        sys.stdout.flush()
         enc_sequences.append(np.concatenate((enc_seq_onehot(seq, pad_length=500),
                                              enc_pssm(pssm_fn, pad_length=500)), axis=1))
     model = DeepCoil_Model(40)
 else:
     for seq in sequences:
+        c += 1
+        sys.stdout.write("\rEncoding sequences: {0} / {1}...".format(c, len_all))
+        sys.stdout.flush()
         enc_sequences.append(enc_seq_onehot(seq, pad_length=500))
     model = DeepCoil_Model(20)
 
 enc_sequences = np.asarray(enc_sequences)
-
+print()
+print()
+print("Predicting...")
+print()
 
 ensemble_results = {}
-print("Predicting...")
+
 for i in range(1, 6):
     if args.pssm:
-        model.load_weights('%s/weights/final_seq_pssm_%s.h5' % (my_loc,i))
+        model.load_weights('%s/weights/final_seq_pssm_%s.h5' % (my_loc, i))
     else:
         model.load_weights('%s/weights/final_seq_%s.h5' % (my_loc, i))
-    predictions = model.predict(enc_sequences)
+    print("Prediction part %s/5..." % i)
+    predictions = model.predict(enc_sequences, verbose=1)
+    print()
     decoded_predictions = [decode(pred, encoded_seq) for pred, encoded_seq in
                      zip(predictions, enc_sequences)]
     for decoded_prediction, entry in zip(decoded_predictions, entries):
@@ -164,4 +175,5 @@ elif args.out_type == 'h5':
     for entry, seq in zip(entries, sequences):
         f.create_dataset(data=np.average(ensemble_results[entry], axis=0), name=entry)
     f.close()
+print()
 print("Done!")

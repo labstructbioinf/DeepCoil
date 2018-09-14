@@ -2,17 +2,11 @@ from Bio import SeqIO
 import os
 import sys
 import numpy as np
-
-stderr = sys.stderr
-sys.stderr = open(os.devnull, 'w')
 from keras.layers import Convolution1D, Dropout, Dense
 from keras.regularizers import l2
 from keras.models import Sequential
 import keras.backend as K
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-sys.stderr = stderr
-
 aa1 = list("ACDEFGHIKLMNPQRSTVWY")
 aa_indices = {aa1[k]: k for k in range(0, len(aa1))}
 
@@ -23,6 +17,7 @@ def is_fasta(filename):
     with open(filename, "r") as handle:
         fasta = SeqIO.parse(handle, "fasta")
         return any(fasta)  # False when `fasta` is empty, i.e. wasn't a FASTA file
+
 
 # Reads sequence from Psiblast PSSM file
 def get_pssm_sequence(fn):
@@ -53,6 +48,8 @@ def _enc_aa(aa):
     enc_aa = [0]*20
     enc_aa[aa_indices[aa]] = 1
     return enc_aa
+
+
 def enc_seq_onehot(seq, pad_length=None, pad_left=0):
     matrix = np.asarray([_enc_aa(aa) for aa in seq])
     if pad_length:
@@ -60,6 +57,7 @@ def enc_seq_onehot(seq, pad_length=None, pad_left=0):
         pad_matrix[pad_left:matrix.shape[0] + pad_left, 0:20] = matrix
         return pad_matrix
     return matrix
+
 
 # Encodes PSSM
 def enc_pssm(pssm_file, pad_length=None, pad_left=0):
@@ -69,6 +67,7 @@ def enc_pssm(pssm_file, pad_length=None, pad_left=0):
         pad_matrix[pad_left:pssm_matrix.shape[0] + pad_left, 0:pssm_matrix.shape[1]] = pssm_matrix
         return pad_matrix
     return pssm_matrix
+
 
 # Decodes predictions (takes into the account padding of sequence)
 def decode(pred, enc_seq):
@@ -88,6 +87,7 @@ def DeepCoil_Model(inp_length):
     model.add(Dense(2, activation='softmax', name='out'))
     model.compile(optimizer='adam', loss='categorical_crossentropy')
     return model
+
 
 # Exit function
 def exit():
