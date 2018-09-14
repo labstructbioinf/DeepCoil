@@ -1,11 +1,10 @@
 import argparse
 from Bio import SeqIO
-import os,sys
-import random
+import os
+import sys
 import numpy as np
 from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoil_Model, decode
 import keras.backend as K
-import multiprocessing
 import h5py
 
 
