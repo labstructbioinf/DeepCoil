@@ -15,8 +15,6 @@ if getattr(sys, 'frozen', False):
 else:
     my_loc = os.path.dirname(os.path.realpath(__file__))
 
-#my_loc = os.path.dirname(os.path.abspath(__file__))
-
 parser = argparse.ArgumentParser(description='DeepCoil')
 parser.add_argument('-i',
                     help='Input file with sequence in fasta format.',
@@ -41,6 +39,9 @@ parser.add_argument('-out_filename',
                     help='Output filename. Works only with \'h5\' output mode',
                     default='out.h5',
                     metavar='OUT_FILENAME')
+parser.add_argument('-skip_checks',
+                    action='store_true',
+                    help='Skips input verification saving some time. Use only if entirely sure or in the re-runs')
 args = parser.parse_args()
 
 # Verify whether weights files are present
@@ -54,7 +55,13 @@ for i in range(1, 6):
 
 # INPUT VERIFICATION #
 
-print("Veryfing input...")
+print()
+if not args.skip_checks:
+    print("Verifying input...")
+    print()
+else:
+    print("Skipping input verification...")
+    print()
 # Check if input file exists
 if not os.path.isfile(args.i):
     print('ERROR: Input file does not exist!')
@@ -75,15 +82,17 @@ if not len(entries) == len(set(entries)):
     exit()
 # Check sequence length and presence of non standard residues
 aa1 = "ACDEFGHIKLMNPQRSTVWY"
-for entry, seq in zip(entries, sequences):
-    if not (len(seq) >= 25 and len(seq) <= 500):
-        print('ERROR: Not accepted sequence length (ID %s -%s). Only sequences between 30 and 500 residues are accepted!' % (
-        entry, len(seq)))
-        exit()
-    for aa in seq:
-        if aa not in aa1:
-            print("ERROR: Sequence (ID %s) contains non-standard residue (%s)." % (entry, aa))
+if not args.skip_checks:
+    for entry, seq in zip(entries, sequences):
+        if not (len(seq) >= 25 and len(seq) <= 500):
+            print(
+                'ERROR: Not accepted sequence length (ID %s -%s). Only sequences between 30 and 500 residues are accepted!' % (
+                    entry, len(seq)))
             exit()
+        for aa in seq:
+            if aa not in aa1:
+                print("ERROR: Sequence (ID %s) contains non-standard residue (%s)." % (entry, aa))
+                exit()
 
 # PSSM SPECIFIC INPUT VERIFICATION #
 if args.pssm:
@@ -94,20 +103,21 @@ if args.pssm:
         exit()
     for entry, seq in zip(entries, sequences):
         pssm_fn = '%s/%s.pssm' % (args.pssm_path, entry)
-        if not os.path.isfile(pssm_fn):
-            print("ERROR: PSSM file for entry %s does not exist!" % entry)
-            exit()
-        if not get_pssm_sequence(pssm_fn) == seq:
-            print("ERROR: Sequence in PSSM file does not match fasta sequence for entry %s!" % entry)
-            exit()
-        try:
-            parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=5, usecols=(i for i in range(2, 22)))
-        except ValueError:
-            print("ERROR: Malformed PSSM file for entry %s!" % entry)
-            exit()
-        if not parsed_pssm.shape[0] == len(seq) and parsed_pssm.shape[1] == 20:
-            print("ERROR: Malformed PSSM file for entry %s!" % entry)
-            exit()
+        if not args.skip_checks:
+            if not os.path.isfile(pssm_fn):
+                print("ERROR: PSSM file for entry %s does not exist!" % entry)
+                exit()
+            if not get_pssm_sequence(pssm_fn) == seq:
+                print("ERROR: Sequence in PSSM file does not match fasta sequence for entry %s!" % entry)
+                exit()
+            try:
+                parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=5, usecols=(i for i in range(2, 22)))
+            except ValueError:
+                print("ERROR: Malformed PSSM file for entry %s!" % entry)
+                exit()
+            if not parsed_pssm.shape[0] == len(seq) and parsed_pssm.shape[1] == 20:
+                print("ERROR: Malformed PSSM file for entry %s!" % entry)
+                exit()
         pssm_files.append(pssm_fn)
 
 print("Encoding sequences...")
