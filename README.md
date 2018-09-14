@@ -1,3 +1,4 @@
+![Build Status](https://travis-ci.org/labstructbioinf/DeepCoil.svg?branch=master)
 # **DeepCoil** #
 Accurate prediction of coiled coil domains in protein sequences.
 ​
