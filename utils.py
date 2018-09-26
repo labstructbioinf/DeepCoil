@@ -60,8 +60,10 @@ def enc_seq_onehot(seq, pad_length=None, pad_left=0):
 
 
 # Encodes PSSM
-def enc_pssm(pssm_file, pad_length=None, pad_left=0):
+def enc_pssm(pssm_file, length, pad_length=None, pad_left=0):
     pssm_matrix = sigmoid(np.genfromtxt(pssm_file, skip_header=3, skip_footer=5, usecols=(i for i in range(2, 22))))
+    if pssm_matrix.shape[0] != length:
+        pssm_matrix = sigmoid(np.genfromtxt(pssm_file, skip_header=3, skip_footer=3, usecols=(i for i in range(2, 22)))) # Custom PSSM
     if pad_length:
         pad_matrix = np.zeros((pad_length, 20))
         pad_matrix[pad_left:pssm_matrix.shape[0] + pad_left, 0:pssm_matrix.shape[1]] = pssm_matrix

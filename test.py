@@ -53,6 +53,18 @@ for entry in ('test1', 'test1'):
 f_test.close()
 f_bk.close()
 
+# Test DeepCoil_PSSM with custom MSA input
+cmd = "python3.5 deepcoil.py -i test/test_4/test.fasta -out_path test/test_4/ -pssm -pssm_path test/test_4/"
+code = run(cmd)
+if code != 0:
+    print("DeepCoil_PSSM test failed!")
+    EXIT = 1
+results = np.loadtxt('test/test_4/test.out', usecols=1)
+results_bk = np.loadtxt('test/test_4/test.out.bk', usecols=1)
+if not np.array_equal(results, results_bk):
+    print("DeepCoil_PSSM custom MSA input test failed!")
+    EXIT = 1
+
 
 sys.exit(EXIT)
 

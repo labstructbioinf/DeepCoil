@@ -110,10 +110,11 @@ if args.pssm:
                 exit()
             try:
                 parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=5, usecols=(i for i in range(2, 22)))
+                if not parsed_pssm.shape[0] == len(seq):
+                     parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=3, usecols=(i for i in range(2, 22)))
+                     if not parsed_pssm.shape[0] == len(seq):
+                          raise ValueError
             except ValueError:
-                print("ERROR: Malformed PSSM file for entry %s!" % entry)
-                exit()
-            if not parsed_pssm.shape[0] == len(seq) and parsed_pssm.shape[1] == 20:
                 print("ERROR: Malformed PSSM file for entry %s!" % entry)
                 exit()
         pssm_files.append(pssm_fn)
@@ -128,7 +129,7 @@ if args.pssm:
         sys.stdout.write("\rEncoding sequences: {0} / {1}...".format(c, len_all))
         sys.stdout.flush()
         enc_sequences.append(np.concatenate((enc_seq_onehot(seq, pad_length=500),
-                                             enc_pssm(pssm_fn, pad_length=500)), axis=1))
+                                             enc_pssm(pssm_fn, len(seq), pad_length=500)), axis=1))
     model = DeepCoil_Model(40)
 else:
     for seq in sequences:
