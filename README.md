@@ -38,7 +38,9 @@ python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
 | **`-pssm`** | Flag for the PSSM-mode. If enabled DeepCoil will require psiblast PSSM files in the pssm_path. Otherwise only sequence information will be used.|
 | **`-pssm_path`** | Directory with psiblast PSSM files. For each entry in the input fasta file there must be a PSSM file. |
 | **`-out_path`** | Directory where the predictions are saved. For each entry one file will be saved. |
-​
+| **`-out_type`** | Output type. Either **'ascii'** (default), which will write single file for each entry in input or **'h5'** which will generate single hdf5 file storing all predictions. |
+| **`-out_filename`** | Works with **"-out_type h5"** option and specifies the hdf5 output filename Overrides the **-out_path** if specified. |
+
 PSSM filenames should be based on the identifiers in the fasta file (only alphanumeric characters and '_'). For example if a fasta sequence is as follows:
 ```
 >GCN4_YEAST RecName: Full=General control protein GCN4; AltName: Full=Amino acid biosynthesis regulatory protein
