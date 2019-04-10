@@ -1,12 +1,14 @@
 import argparse
-from Bio import SeqIO
 import os
 import sys
-import numpy as np
-from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoil_Model, decode
-import keras.backend as K
-import h5py
 
+import h5py
+import keras.backend as K
+import numpy as np
+from Bio import SeqIO
+
+from utils import enc_seq_onehot, enc_pssm, is_fasta, get_pssm_sequence, DeepCoil_Model, decode, SegmentResultFilter, \
+    ScoreResultFilter
 
 # cx_freeze specific
 if getattr(sys, 'frozen', False):
@@ -41,13 +43,19 @@ parser.add_argument('-out_filename',
 parser.add_argument('-skip_checks',
                     action='store_true',
                     help='Skips input verification saving some time. Use only if entirely sure or in the re-runs')
+parser.add_argument('-min_residue_score',
+                    default=None,
+                    help="minimum score to assign residue as part of coiled coil")
+parser.add_argument('-min_segment_length',
+                    default=None,
+                    help="minimum number of consecutive residues to ")
 args = parser.parse_args()
 
 # Verify whether weights files are present
 
 for i in range(1, 6):
     if not os.path.isfile('%s/weights/final_seq_%s.h5' % (my_loc, i)) and not os.path.isfile(
-                    '%s/weights/final_seq_pssm_%s.h5' % (my_loc, i)):
+            '%s/weights/final_seq_pssm_%s.h5' % (my_loc, i)):
         print("Weight files for the DeepCoil model are not available.")
         exit()
 
@@ -111,9 +119,10 @@ if args.pssm:
             try:
                 parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=5, usecols=(i for i in range(2, 22)))
                 if not parsed_pssm.shape[0] == len(seq):
-                     parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=3, usecols=(i for i in range(2, 22)))
-                     if not parsed_pssm.shape[0] == len(seq):
-                          raise ValueError
+                    parsed_pssm = np.genfromtxt(pssm_fn, skip_header=3, skip_footer=3,
+                                                usecols=(i for i in range(2, 22)))
+                    if not parsed_pssm.shape[0] == len(seq):
+                        raise ValueError
             except ValueError:
                 print("ERROR: Malformed PSSM file for entry %s!" % entry)
                 exit()
@@ -156,7 +165,7 @@ for i in range(1, 6):
     predictions = model.predict(enc_sequences, verbose=1)
     print()
     decoded_predictions = [decode(pred, encoded_seq) for pred, encoded_seq in
-                     zip(predictions, enc_sequences)]
+                           zip(predictions, enc_sequences)]
     for decoded_prediction, entry in zip(decoded_predictions, entries):
         if i == 1:
             ensemble_results[entry] = decoded_prediction
@@ -168,13 +177,26 @@ if args.out_type == 'ascii':
     for entry, seq in zip(entries, sequences):
         f = open('%s/%s.out' % (args.out_path, entry), 'w')
         final_results = np.average(ensemble_results[entry], axis=0)
+        res_filter = None
+        if args.min_residue_score:
+            res_filter = ScoreResultFilter(final_results, args.min_residue_score)
+            res_filter.write_results(entry, seq,
+                                     os.path.join(args.out_path, 'residue_filter_{}'.format(args.min_residue_score)))
+        if args.min_segment_length:
+            seg_filter = SegmentResultFilter(final_results, args.min_segment_length, other_filter=res_filter)
+            seg_filter.write_results(entry, seq,
+                                     os.path.join(args.out_path, 'segment_filter_{}'.format(args.min_segment_length)))
         for aa, prob in zip(seq, final_results):
             f.write("%s %s\n" % (aa, "% .3f" % prob))
     f.close()
 elif args.out_type == 'h5':
     f = h5py.File(args.out_filename, 'w')
     for entry, seq in zip(entries, sequences):
-        f.create_dataset(data=np.average(ensemble_results[entry], axis=0), name=entry)
+        final_results = np.average(ensemble_results[entry], axis=0)
+        can_pass = ScoreResultFilter(args.min_residue_score, final_results).is_correct and SegmentResultFilter(
+            args.min_segment_length, final_results).is_correct
+        if can_pass:
+            f.create_dataset(data=final_results, axis=0, name=entry)
     f.close()
 print()
 print("Done!")
