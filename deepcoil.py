@@ -193,10 +193,7 @@ elif args.out_type == 'h5':
     f = h5py.File(args.out_filename, 'w')
     for entry, seq in zip(entries, sequences):
         final_results = np.average(ensemble_results[entry], axis=0)
-        can_pass = ScoreResultFilter(args.min_residue_score, final_results).is_correct and SegmentResultFilter(
-            args.min_segment_length, final_results).is_correct
-        if can_pass:
-            f.create_dataset(data=final_results, axis=0, name=entry)
+        f.create_dataset(data=final_results, name=entry)
     f.close()
 print()
 print("Done!")
