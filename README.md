@@ -40,9 +40,9 @@ python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
 | **`-out_type`** | Output type. Either **'ascii'** (default), which will write single file for each entry in input or **'h5'** which will generate single hdf5 file storing all predictions. |
 | **`-out_filename`** | Works with **"-out_type h5"** option and specifies the hdf5 output filename Overrides the **-out_path** if specified. |
 | **`-min_residue_score`** | Number in the range <0,1>. DeepCoil will return sequences that have at least one residue with  score greater than min_residue_score |
-| **`-min_segment_length`** | Number greater than 0. If passed, DeepCoil will return sequences that have a segment of length at least **-min_segment_length**. To be used with **-min_residue_score** |
+| **`-min_segment_length`** | Number greater than 0. DeepCoil will return sequences that contain a segment of length **-min_segment_length** or more. To be used with **-min_residue_score** |
 
-
+Results of **`-min_residue_score`** and **`-min_segment_length`** filters are stored in directories located in **`-out_path`**.
 
 PSSM filenames should be based on the identifiers in the fasta file (only alphanumeric characters and '_'). For example if a fasta sequence is as follows:
 ```
