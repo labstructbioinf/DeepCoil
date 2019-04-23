@@ -7,7 +7,6 @@ First clone this repository:
 ```bash
 $ git clone https://github.com/labstructbioinf/DeepCoil.git
 ```
-​
 Required packages to run DeepCoil are listed in the **`requirements.txt`** file.
 We suggest running DeepCoil in the virtual environment:
 If you don't have virtualenv installed do so:
