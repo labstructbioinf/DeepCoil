@@ -31,7 +31,7 @@ This should produce output **`example/out_pssm/GCN4_YEAST.out`** identical to **
 ```bash
 python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
 ```
-| Option &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        | Description |
+| Option        | Description |
 |:-------------:|-------------|
 | **`-i`** | Input file in FASTA format. Can contain multiple entries. |
 | **`-pssm`** | Flag for the PSSM-mode. If enabled DeepCoil will require psiblast PSSM files in the pssm_path. Otherwise only sequence information will be used.|
@@ -39,8 +39,10 @@ python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
 | **`-out_path`** | Directory where the predictions are saved. For each entry one file will be saved. |
 | **`-out_type`** | Output type. Either **'ascii'** (default), which will write single file for each entry in input or **'h5'** which will generate single hdf5 file storing all predictions. |
 | **`-out_filename`** | Works with **"-out_type h5"** option and specifies the hdf5 output filename Overrides the **-out_path** if specified. |
-| **`-min_residue_score`** | Number from range <0,1>. If passed return sequences which have at least one residue with greater score |
-| **`-min_segment_length`** | Number greater than 0. If passed return sequences which have segment of length at least **-min_segment_length** |
+| **`-min_residue_score`** | Number in the range <0,1>. DeepCoil will return sequences that have at least one residue with  score greater than min_residue_score |
+| **`-min_segment_length`** | Number greater than 0. If passed, DeepCoil will return sequences that have a segment of length at least **-min_segment_length**. To be used with **-min_residue_score** |
+
+
 
 PSSM filenames should be based on the identifiers in the fasta file (only alphanumeric characters and '_'). For example if a fasta sequence is as follows:
 ```
