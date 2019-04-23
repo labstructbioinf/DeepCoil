@@ -31,7 +31,7 @@ This should produce output **`example/out_pssm/GCN4_YEAST.out`** identical to **
 ```bash
 python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
 ```
-| Option        | Description |
+| Option &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        | Description |
 |:-------------:|-------------|
 | **`-i`** | Input file in FASTA format. Can contain multiple entries. |
 | **`-pssm`** | Flag for the PSSM-mode. If enabled DeepCoil will require psiblast PSSM files in the pssm_path. Otherwise only sequence information will be used.|
