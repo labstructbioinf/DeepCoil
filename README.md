@@ -1,61 +1,42 @@
-![Build Status](https://travis-ci.org/labstructbioinf/DeepCoil.svg?branch=master)
 # **DeepCoil** #
-Accurate prediction of coiled coil domains in protein sequences.
-​
+[![DOI:10.1093/bioinformatics/bty1062 ](https://zenodo.org/badge/DOI/10.1093/bioinformatics/bty1062.svg)](https://doi.org/10.1093/bioinformatics/bty1062 )
+![build](https://github.com/labstructbioinf/DeepCoil/workflows/deepcoil/badge.svg) 
+
+**Fast and accurate prediction of coiled coil domains in protein sequences.**
 ## **Installation** ##
-First clone this repository:
+The most convenient way to install **DeepCoil** is to use pip:
 ```bash
-$ git clone https://github.com/labstructbioinf/DeepCoil.git
+$ pip install deepcoil
 ```
-Required packages to run DeepCoil are listed in the **`requirements.txt`** file.
-We suggest running DeepCoil in the virtual environment:
-If you don't have virtualenv installed do so:
-```bash
-$ pip3 install virtualenv
-```
-Create virtual environment and install required packages:
-```bash
-$ cd virtual_envs_location
-$ virtualenv deepcoil_env
-$ source deepcoil_env/bin/activate
-$ cd DEEPCOIL_LOCATION
-$ pip3 install -r requirements.txt
-```
-Test the installation:
-```bash
-$ ./run_example.sh
-```
-This should produce output **`example/out_pssm/GCN4_YEAST.out`** identical to **`example/out_pssm/GCN4_YEAST.out.bk`** and accordingly for the **`example/out_seq/`** directory.
-​
+
 ## **Usage** ##
+
+##### Running DeepCoil as standalone:
+
 ```bash
-python3.5 deepcoil.py [-h] -i FILE [-out_path DIR] [-pssm] [-pssm_path DIR]
+deepcoil [-h] -i FILE [-out_path DIR]
 ```
 | Option        | Description |
 |:-------------:|-------------|
 | **`-i`** | Input file in FASTA format. Can contain multiple entries. |
-| **`-pssm`** | Flag for the PSSM-mode. If enabled DeepCoil will require psiblast PSSM files in the pssm_path. Otherwise only sequence information will be used.|
-| **`-pssm_path`** | Directory with psiblast PSSM files. For each entry in the input fasta file there must be a PSSM file. |
-| **`-out_path`** | Directory where the predictions are saved. For each entry one file will be saved. |
-| **`-out_type`** | Output type. Either **'ascii'** (default), which will write single file for each entry in input or **'h5'** which will generate single hdf5 file storing all predictions. |
-| **`-out_filename`** | Works with **"-out_type h5"** option and specifies the hdf5 output filename Overrides the **-out_path** if specified. |
-| **`-min_residue_score`** | Number in the range <0,1>. DeepCoil will return sequences that have at least one residue with  score greater than min_residue_score |
-| **`-min_segment_length`** | Number greater than 0. DeepCoil will return sequences that contain a segment of length **-min_segment_length** or more. To be used with **-min_residue_score** |
+| **`-out_path`** | Directory where the predictions are saved. For each entry in the input file one file will be saved.|
+| **`--gpu`** | Flag for turning on the GPU usage. Results in faster inference on large datasets.|
 
-Results of **`-min_residue_score`** and **`-min_segment_length`** filters are stored in directories located in **`-out_path`**.
 
-PSSM filenames should be based on the identifiers in the fasta file (only alphanumeric characters and '_'). For example if a fasta sequence is as follows:
+##### Running DeepCoil within script:
+
+```python
+from deepcoil import DeepCoil
+from deepcoil.utils import plot_preds
+from Bio import SeqIO
+
+dc = DeepCoil(use_gpu=True)
+
+inp = {str(entry.id): str(entry.seq) for entry in SeqIO.parse('example/example.fas', 'fasta')}
+
+results = dc.predict(inp)
+
+plot_preds(results['3WPA_1'], to_file='example/example.png')
 ```
->GCN4_YEAST RecName: Full=General control protein GCN4; AltName: Full=Amino acid biosynthesis regulatory protein
-MSEYQPSLFALNPMGFSPLD....
-```
-PSSM file should be named **`GCN4_YEAST.pssm`**.
-​
-You can generate PSSM files with the following command (requires NR90 database):
-```bash
-psiblast -query GCN4_YEAST.fasta -db NR90_LOCATION -evalue 0.001 -num_iterations 3 -out_ascii_pssm GCN4_YEAST.pssm
-```
-In order to generate PSSM file from multiple sequence alignment (MSA) you can use this command:
-```bash
-psiblast -subject sequence.fasta -in_msa alignment.fasta -out_ascii_pssm output.pssm
-```
+###### Example graphical output:
+![Example](example/example.png)
