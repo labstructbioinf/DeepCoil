@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import groupby
 from Bio import SeqIO
 from scipy.signal import find_peaks
 
@@ -40,8 +41,16 @@ def sharpen_preds(probs):
         end = int(peaks[1]['right_ips'][i])
         prob = max(probs[beg:end])
 
-        for i in range(beg, end + 1):
+        for j in range(beg, end + 1):
             if prob >= 0.1:
-                sharp_probs[i] = prob
+                sharp_probs[j] = prob
+
+    sharp_probs = sharp_probs.flatten()
+    above_threshold = sharp_probs > 0
+    for k, g in groupby(enumerate(above_threshold), key=lambda x: x[1]):
+        if k:
+            g = list(g)
+            beg, end = g[0][0], g[-1][0]
+            sharp_probs[beg:end] = max(sharp_probs[beg:end])
 
     return sharp_probs
