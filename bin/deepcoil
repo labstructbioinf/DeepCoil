@@ -47,7 +47,15 @@ print('Predicting...')
 preds = dc.predict(data)
 
 print('Writing output...')
-for entry in data.keys():
+
+inp_keys = set(data.keys())
+out_keys = set(preds.keys())
+
+if len(out_keys) < len(inp_keys):
+    print('WARNING: Predictions for some sequences were not calculated due to length limitations and/or other errors.' \
+    ' Inspect the warnings and results carefully!')
+
+for entry in out_keys:
     f = open(f'{args.out_path}/{entry}.out', 'w')
     cc_pred_raw = preds[entry]['cc']
     cc_pred = sharpen_preds(cc_pred_raw)
