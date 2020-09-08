@@ -12,6 +12,7 @@ from deepcoil.utils.generators import SeqChunker
 from deepcoil.utils import corr_seq
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.utils import get_file
+import tensorflow.keras.backend as K
 from zipfile import ZipFile
 
 
@@ -126,14 +127,14 @@ class DeepCoil:
         # Encode SeqVec (#TODO: handle large inputs which may cause OOM errors)
         embeddings = self._seqvec.encode(data, to_file=False)
 
-        if self.use_gpu:
-            # If GPU is used free mem used by SeqVec
-            torch.cuda.empty_cache()
-
         # Setup generator that'll be evaluated
         seqvec_enc = SeqVecMemEncoder(embeddings, pad_length=500)
         gen = SeqChunker(data, batch_size=64, W_size=500, shuffle=False,
                          data_encoders=[seqvec_enc], data_cols=['sequence'])
+
+        if self.use_gpu:
+            # If GPU is used free mem used by SeqVec
+            torch.cuda.empty_cache()
 
         # Predict with each of N predictors, depad predictions and average out for final output
         for i in range(1, self._n_weights+1):
@@ -153,6 +154,8 @@ class DeepCoil:
                 cc_preds_per_fold[key].append(pred)
             for key, pred in hept_preds_depadded.items():
                 hept_preds_per_fold[key].append(pred)
+
+        K.clear_session()
 
         # Average predictions between 5 predictors from CV training
         cc_preds_avg = {key: np.average(value, axis=0).flatten() for key, value in cc_preds_per_fold.items()}
