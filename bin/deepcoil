@@ -4,7 +4,7 @@ import os
 import argparse
 from Bio import SeqIO
 from deepcoil import DeepCoil
-from deepcoil.utils import is_fasta, sharpen_preds
+from deepcoil.utils import is_fasta, sharpen_preds, plot_preds
 
 parser = argparse.ArgumentParser(description='DeepCoil')
 parser.add_argument('-i',
@@ -17,6 +17,9 @@ parser.add_argument('-out_path',
                     metavar='DIR')
 parser.add_argument('--gpu',
                     help='Use GPU',
+                    action='store_true')
+parser.add_argument('--plot',
+                    help='Plot predictions. Images will be stored in the path defined by -out_path',
                     action='store_true')
 args = parser.parse_args()
 
@@ -64,4 +67,7 @@ for entry in out_keys:
     for aa, cc_prob, cc_prob_raw, a_prob, d_prob in zip(data[entry], cc_pred, cc_pred_raw, hept_pred[:, 1], hept_pred[:, 2]):
         f.write('{0}\t{1:.3f}\t{2:.3f}\t{3:.3f}\t{4:.3f}\n'.format(aa, float(cc_prob), float(cc_prob_raw), float(a_prob), float(d_prob)))
     f.close()
+if args.plot:
+    for entry in out_keys:
+        plot_preds(preds[entry], out_file=f'{args.out_path}/{entry}.png')
 print("Done!")

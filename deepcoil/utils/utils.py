@@ -129,3 +129,4 @@ def plot_preds(results, beg=0, end=-1, out_file=None):
     plt.subplots_adjust(hspace=0)
     if out_file:
         plt.savefig(out_file, dpi=300)
+        plt.close()
