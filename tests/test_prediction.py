@@ -12,7 +12,7 @@ class TestPredictions:
         f = h5py.File('tests/data/test_seq_ref.hdf5', 'r')
         
         # Predict with DeepCoil
-        dc = DeepCoil(use_gpu=False)
+        dc = DeepCoil(use_gpu=False, n_cpu=4)
         results = dc.predict(seq_dict)
         
         # Compare predictions with cached predictions
