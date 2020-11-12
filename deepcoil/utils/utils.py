@@ -58,24 +58,25 @@ def sharpen_preds(probs):
     return sharp_probs
 
 
-def plot_preds(results, beg=0, end=-1, out_file=None):
+def plot_preds(results, beg=0, end=-1, out_file=None, dpi=300):
     """
     Helper function for plotting DeepCoil results
     :param results: results for given entry returned by DeepCoil
     :param beg: (optional) beginning aa of the range to use for plotting (useful for long sequences to see only subset of results)
     :param end: (optional) end aa of the range to use for plotting (useful for long sequences to see only subset of results)
     :param out_file: (optional) if specified results will also be dumped to file
+    :param dpi: (optional) DPI of the resulting image
     :return:
     """
 
     sharp_probs = sharpen_preds(results['cc'])[beg:end]
     probs, hept = results['cc'][beg:end], results['hept'][beg:end, :]
 
-    fig, (ax2, ax1) = plt.subplots(2, gridspec_kw={'height_ratios': [1, 9]}, figsize=(9, 7))
+    fig, (ax2, ax1) = plt.subplots(2, gridspec_kw={'height_ratios': [1, 9]}, figsize=(9, 5))
 
     # Plot probs and sharpened probs
     ax1.plot(probs, linewidth=1, c='gray', linestyle='dashed')
-    ax1.plot(sharp_probs, linewidth=3, c='black')
+    ax1.plot(sharp_probs, linewidth=2, c='black')
 
     # Set axis limits
     ax1.set_ylim(0.01, 1)
@@ -89,12 +90,12 @@ def plot_preds(results, beg=0, end=-1, out_file=None):
     spacing = spacings[np.argmin([abs(10 - len([i for i in range(0, len(probs), spacing)])) for spacing in spacings])]
     ticks = [i for i in range(0, len(probs), spacing)]
     labels = [i + beg for i in range(0, len(probs), spacing)]
-    labels[0] = ''
     ax1.set_xticks(ticks)
     ax1.set_xticklabels(labels)
     ax1.set_yticks([i / 10 for i in range(1, 10, 1)])
     ax1.xaxis.set_ticks_position('none')
-    ax1.set_xlabel('Sequence position', fontsize=16)
+    ax1.set_xlabel('Position in Sequence')
+    ax1.set_ylabel('Coiled Coil Probablity')
 
     # Parse a, d heptad annotations and plot
     a, d = [], []
@@ -120,13 +121,12 @@ def plot_preds(results, beg=0, end=-1, out_file=None):
     # Show the ticks corresponding to the bottom panel
     ax2.xaxis.grid(linestyle="dashed", color='gray', linewidth=0.5)
     ax2.set_xticks([i for i in range(0, len(probs), 50)])
-    ax2.set_yticklabels(['a', 'd'], rotation=0, fontsize=12)
+    ax2.set_yticks([0.5, 1.5])
+    ax2.set_yticklabels(['\'a\' core pos.', '\'d\' core pos.'], rotation=0)
     ax2.set_xticks(ticks)
-    ax2.set_xticklabels(labels)
     ax2.xaxis.set_ticks_position('none')
 
-    plt.tight_layout()
     plt.subplots_adjust(hspace=0)
     if out_file:
-        plt.savefig(out_file, dpi=300)
+        plt.savefig(out_file, dpi=dpi)
         plt.close()

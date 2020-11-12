@@ -26,6 +26,11 @@ parser.add_argument('--gpu',
 parser.add_argument('--plot',
                     help='Plot predictions. Images will be stored in the path defined by the -out_path',
                     action='store_true')
+parser.add_argument('--dpi',
+                    help='DPI of the produced images',
+                    default=300,
+                    type=int,
+                    metavar='DPI')
 args = parser.parse_args()
 
 # Check if input file exists
@@ -74,5 +79,5 @@ for entry in out_keys:
     f.close()
 if args.plot:
     for entry in out_keys:
-        plot_preds(preds[entry], out_file=f'{args.out_path}/{entry}.png')
+        plot_preds(preds[entry], out_file=f'{args.out_path}/{entry}.png', dpi=args.dpi)
 print("Done!")
