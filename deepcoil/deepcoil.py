@@ -63,10 +63,16 @@ class DeepCoil:
         seqvec_weights_fn = f'{seqvec_dir}/uniref50_v2/weights.hdf5'
         if not (os.path.isfile(seqvec_conf_fn) and os.path.isfile(seqvec_weights_fn)):
             print('SeqVec weights are not available, downloading from the remote source (this\'ll happen only once)...')
-            seqvec_zip_fn = get_file(f'{self._path}/weights/seqvec.zip', 'https://rostlab.org/~deepppi/seqvec.zip')
-            archive = ZipFile(seqvec_zip_fn)
-            archive.extract('uniref50_v2/options.json', seqvec_dir)
-            archive.extract('uniref50_v2/weights.hdf5', seqvec_dir)
+            urls = ['https://rostlab.org/~deepppi/seqvec.zip', 'https://lbs.cent.uw.edu.pl/static/files/seqvec.zip']
+            for url in urls:
+                try:
+                    seqvec_zip_fn = get_file(f'{self._path}/weights/seqvec.zip', url)
+                    archive = ZipFile(seqvec_zip_fn)
+                    archive.extract('uniref50_v2/options.json', seqvec_dir)
+                    archive.extract('uniref50_v2/weights.hdf5', seqvec_dir)
+                    break
+                except:
+                    print(f'Could not download SeqVec weights from url: {url}')
         if self.use_gpu:
             return SeqVec(model_dir=f'{seqvec_dir}/uniref50_v2', cuda_device=0, tokens_per_batch=8000)
         else:
