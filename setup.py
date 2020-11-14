@@ -1,12 +1,17 @@
 from setuptools import setup, find_packages
 
-VERSION = '2.0rc1'
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+VERSION = '2.0'
 with open('requirements.txt') as f:
       install_reqs = f.read().splitlines()
 
 setup(name='deepcoil',
       version=VERSION,
-      description='Fast and accurate prediction of coiled coil domains in protein sequences.',
+      description='Fast and accurate prediction of coiled coil domains in protein sequences',
+      long_description=long_description,
+      long_description_content_type="text/markdown",
       author='Jan Ludwiczak',
       author_email='j.ludwiczak@cent.uw.edu.pl',
       url='https://github.com/labstructbioinf/deepcoil',

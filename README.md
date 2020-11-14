@@ -4,14 +4,15 @@
 
 ## **Fast and accurate prediction of coiled coil domains in protein sequences**
 ### **New in version 2.0** ###
+- Retrained with the updated dataset based on *[SamCC-Turbo](https://github.com/labstructbioinf/samcc_turbo)* labels.
 - Faster inference time by applying *[SeqVec](https://github.com/rostlab/SeqVec)* embeddings instead of *psiblast* profiles.
-- Additional heptad predictions (*a* and *d* core positions).
+- Heptad register prediction (*a* and *d* core positions).
 - No maximum sequence length limit.
 - Convenient interface for using *DeepCoil* within python scripts.
 - Automated peak detection for improved output readability.
 - Simplified installation with *pip*.
 
-Older DeepCoil versions are available [here](https://github.com/labstructbioinf/DeepCoil/releases). 
+**Older DeepCoil versions are available [here](https://github.com/labstructbioinf/DeepCoil/releases).**
 
 ### **Requirements and installation** ###
 DeepCoil requires `python>=3.6.1` and `pip>=19.0`. Other requirements are specified in the `requirements.txt` file.
@@ -39,6 +40,13 @@ deepcoil [-h] -i FILE [-out_path DIR] [-n_cpu NCPU] [--gpu] [--plot]
 | **`--dpi`** | DPI of the saved plots, active only with **`--plot`** option.|
 
 In a rare case of `deepcoil` being not available in your `PATH` after installation please look in the `$HOME/.local/bin/` or other system specific `pip` directory.
+
+Description of columns in output file:
+- **`aa`** - amino acid in the input protein sequence
+- **`cc`** - sharpened coiled coil propensity
+- **`raw_cc`** - raw coiled coil propensity
+- **`prob_a`** - probability of *a* core position
+- **`prob_d`** - probability of *d* core position
 
 #### Running DeepCoil within script:
 
