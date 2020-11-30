@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-VERSION = '2.0'
+VERSION = '2.0.1'
 with open('requirements.txt') as f:
       install_reqs = f.read().splitlines()
 

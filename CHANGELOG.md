@@ -1,5 +1,8 @@
 ## Changelog
 
+### v2.0.1
+- Updated DC2 neural network weights.
+
 ### v2.0
 - Retrained with the updated dataset based on *[SamCC-Turbo](https://github.com/labstructbioinf/samcc_turbo)* labels.
 - Faster inference time by applying *[SeqVec](https://github.com/rostlab/SeqVec)* embeddings instead of *psiblast* profiles.
