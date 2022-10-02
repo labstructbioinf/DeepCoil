@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "deepcoil"
+version = "2.0.2"
+description = "Fast and accurate prediction of coiled coil domains in protein sequences"
+authors = ["Jan Ludwiczak <j.ludwiczak@cent.uw.edu.pl>"]
+
+[tool.poetry.dependencies]
+python = "<3.9"
+biopython = "=1.79"
+allennlp = "=0.9.0"
+tensorflow = "^2.3"
+pandas = "=1.3.0"
+overrides = "=3.1.0"
+seaborn = "^0.12.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+deepcoil = 'deepcoil.run_deepcoil:main'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

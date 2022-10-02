@@ -15,7 +15,7 @@
 **Older DeepCoil versions are available [here](https://github.com/labstructbioinf/DeepCoil/releases).**
 
 ### **Requirements and installation** ###
-DeepCoil requires `python>=3.6.1` and `pip>=19.0`. Other requirements are specified in the `requirements.txt` file.
+DeepCoil requires `python>=3.7,<3.9` and `pip>=19.0`.
 
 The most convenient way to install **DeepCoil** is to use pip:
 ```bash

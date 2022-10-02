@@ -1,2 +1,0 @@
-include deepcoil/weights/*.h5
-include deepcoil/models/seq.json
