@@ -15,7 +15,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel twine pytest pytest-cov
         pip install .
     - name: Set environment
       run: |
