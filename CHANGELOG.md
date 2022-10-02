@@ -1,5 +1,8 @@
 ## Changelog
 
+## v2.0.2
+- Fixed installation issues.
+
 ### v2.0.1
 - Updated DC2 neural network weights.
 
