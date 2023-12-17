@@ -16,7 +16,6 @@ dependencies = [
   "overrides==3.1.0",
   "pandas",
   "seaborn",
-  "wheel>=0.32.0,<0.33.0"
 ]
 
 [project.scripts]
